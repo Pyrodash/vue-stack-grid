@@ -23,11 +23,11 @@
     "waterfall"
   ],
   "dependencies": {
-    "vue-images-loaded": "^1.1.2"
+    "imagesloaded": "^4.1.4"
   },
   "devDependencies": {
     "inquirer": "^7.1.0",
-    "poi": "^12.8.0",
+    "poi": "^12.10.3",
     "vue": "^2.6.11",
     "vue-template-compiler": "^2.6.11"
   }

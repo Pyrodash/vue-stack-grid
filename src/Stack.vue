@@ -5,7 +5,7 @@
 </template>
 
 <script>
-  import imagesLoaded from 'vue-images-loaded'
+  import imagesLoaded from 'imagesloaded'
 
   export default {
     props: {
@@ -38,7 +38,10 @@
       window.addEventListener('resize', this.reflow)
       this.update()
     },
-    destroyed() {
+    updated() {
+        this.update()
+    },
+    unmounted() {
       window.removeEventListener('resize', this.reflow)
     },
     methods: {
@@ -83,8 +86,12 @@
           columnWidth: this.columnWidth,
         })
 
-        this.$children.forEach((child, i) => {
-          child.$el.style.width = this.columnWidth + 'px'
+        const children = this.$refs.container.children
+
+        for (let i = 0; i < children.length; i++) {
+          let child = children[i]
+
+          child.style.width = this.columnWidth + 'px'
 
           let n = 0
           if (i < this.columnCount)
@@ -101,9 +108,9 @@
             })
           }
 
-          child.$el.style.transform = 'translate(' + cols[n].x + 'px, ' + cols[n].h + 'px)'
-          cols[n].h += child.$el.offsetHeight + this.gutterHeight
-        })
+          child.style.transform = 'translate(' + cols[n].x + 'px, ' + cols[n].h + 'px)'
+          cols[n].h += child.offsetHeight + this.gutterHeight
+        }
 
         let containerHeight = 0
         cols.forEach(col => containerHeight = Math.max(containerHeight, col.h))
@@ -117,7 +124,19 @@
       }
     },
     directives: {
-      imagesLoaded
+      imagesLoaded: {
+        mounted(el, binding) {
+          const imgLoad = imagesLoaded(el)
+          const { arg } = binding
+            
+          switch(arg) {
+            case 'on':
+              const eventName = Object.keys(binding.modifiers)[0]
+
+              imgLoad.on(eventName, binding.value)
+          }
+        }       
+      }
     }
   }
 </script>
@@ -126,6 +145,10 @@
   .vsg-container {
     display: block;
     position: relative;
+    width: 100%;
+  }
+
+  .vsg-container ::v-deep(img) {
     width: 100%;
   }
 </style>
